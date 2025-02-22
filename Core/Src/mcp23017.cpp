@@ -21,25 +21,26 @@ namespace MCP23017 {
 
     PinState MCP23017::get_pin_state(Port const port, PinNum const pin_num) const noexcept
     {
-        return std::bit_cast<std::uint8_t>(this->get_gpio_register(port, this->bank_)) &
-                       (1U << std::to_underlying(pin_num))
+        return (this->get_gpio_register(port, this->bank_) & (1U << std::to_underlying(pin_num))) > 0
                    ? PinState::LOGIC_HIGH
                    : PinState::LOGIC_LOW;
     }
 
     void MCP23017::set_pin_state(Port const port, PinNum const pin_num, PinState const pin_state) const noexcept
     {
-        auto gpio = std::bit_cast<std::uint8_t>(this->get_gpio_register(port, this->bank_));
-        pin_state == PinState::LOGIC_HIGH ? gpio |= (1U << std::to_underlying(pin_num))
-                                          : gpio &= ~(1U << std::to_underlying(pin_num));
-        this->set_gpio_register(port, this->bank_, std::bit_cast<GPIO>(gpio));
+        this->set_gpio_register(port,
+                                this->bank_,
+                                pin_state == PinState::LOGIC_HIGH
+                                    ? this->get_gpio_register(port, this->bank_) | (1U << std::to_underlying(pin_num))
+                                    : this->get_gpio_register(port, this->bank_) &
+                                          ~(1U << std::to_underlying(pin_num)));
     }
 
     void MCP23017::toggle_pin(Port const port, PinNum const pin_num) const noexcept
     {
-        auto gpio = std::bit_cast<std::uint8_t>(this->get_gpio_register(port, this->bank_));
-        gpio ^= (1U << std::to_underlying(pin_num));
-        this->set_gpio_register(port, this->bank_, std::bit_cast<GPIO>(gpio));
+        this->set_gpio_register(port,
+                                this->bank_,
+                                this->get_gpio_register(port, this->bank_) ^ (1U << std::to_underlying(pin_num)));
     }
 
     void MCP23017::set_pin(Port const port, PinNum const pin_num) const noexcept

@@ -180,6 +180,26 @@ namespace MCP23017 {
         GPPU gppu{};
     };
 
+    [[nodiscard]] inline std::strong_ordering operator<=>(GPIO const gpio, std::uint8_t const num) noexcept
+    {
+        return std::bit_cast<std::uint8_t>(gpio) <=> num;
+    }
+
+    [[nodiscard]] inline GPIO operator|(GPIO const gpio, std::uint8_t const mask) noexcept
+    {
+        return std::bit_cast<GPIO>(static_cast<std::uint8_t>(std::bit_cast<std::uint8_t>(gpio) | mask));
+    }
+
+    [[nodiscard]] inline GPIO operator&(GPIO const gpio, std::uint8_t const mask) noexcept
+    {
+        return std::bit_cast<GPIO>(static_cast<std::uint8_t>(std::bit_cast<std::uint8_t>(gpio) & mask));
+    }
+
+    [[nodiscard]] inline GPIO operator^(GPIO const gpio, std::uint8_t const mask) noexcept
+    {
+        return std::bit_cast<GPIO>(static_cast<std::uint8_t>(std::bit_cast<std::uint8_t>(gpio) ^ mask));
+    }
+
 }; // namespace MCP23017
 
 #endif // MCP23017_REGISTERS_HPP
