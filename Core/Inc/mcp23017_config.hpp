@@ -21,7 +21,7 @@ namespace MCP23017 {
         B = 0x01,
     };
 
-    enum struct Pin : std::uint8_t {
+    enum struct PinNum : std::uint8_t {
         IO_7 = 0x07,
         IO_6 = 0x06,
         IO_5 = 0x05,
@@ -37,7 +37,7 @@ namespace MCP23017 {
         OUTPUT = 0x00,
     };
 
-    enum struct Polarity : std::uint8_t {
+    enum struct PinPolarity : std::uint8_t {
         INVERSE = 0x01,
         NORMAL = 0x00,
     };

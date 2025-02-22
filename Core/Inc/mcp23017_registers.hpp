@@ -170,6 +170,16 @@ namespace MCP23017 {
         bool gp0 : 1;
     } packed;
 
+    struct PortConfig {
+        IODIR iodir{};
+        IPOL ipol{};
+        GPINTEN gpinten{};
+        DEFVAL defval{};
+        INTCON intcon{};
+        IOCON iocon{};
+        GPPU gppu{};
+    };
+
 }; // namespace MCP23017
 
 #endif // MCP23017_REGISTERS_HPP

@@ -12,14 +12,7 @@ namespace MCP23017 {
         using I2CDevice = Utility::I2CDevice;
 
         MCP23017() noexcept = default;
-        MCP23017(I2CDevice&& i2c_device,
-                 IODIR const iodir,
-                 IPOL const ipol,
-                 GPINTEN const gptinten,
-                 DEFVAL const defval,
-                 INTCON const intcon,
-                 IOCON const iocon,
-                 GPPU const gppu) noexcept;
+        MCP23017(I2CDevice&& i2c_device, PortConfig const& port_a_config, PortConfig const& port_b_config) noexcept;
 
         MCP23017(MCP23017 const& other) = delete;
         MCP23017(MCP23017&& other) noexcept = default;
@@ -29,7 +22,50 @@ namespace MCP23017 {
 
         ~MCP23017() noexcept;
 
+        PinState get_pin_state(Port const port, PinNum const pin_num) const noexcept;
+        void set_pin_state(Port const port, PinNum const pin_num, PinState const pin_state) const noexcept;
+
+        void toggle_pin(Port const port, PinNum const pin_num) const noexcept;
+        void set_pin(Port const port, PinNum const pin_num) const noexcept;
+        void reset_pin(Port const port, PinNum const pin_num) const noexcept;
+
     private:
+        void initialize_port(Port const port, PortConfig const& port_config) const noexcept;
+        void initialize(PortConfig const& port_a_config, PortConfig const& port_b_config) noexcept;
+        void deinitialize() noexcept;
+
+        IODIR get_iodir_register(Port const port, Bank const bank) const noexcept;
+        void set_iodir_register(Port const port, Bank const bank, IODIR const iodir) const noexcept;
+
+        IPOL get_ipol_register(Port const port, Bank const bank) const noexcept;
+        void set_ipol_register(Port const port, Bank const bank, IPOL const ipol) const noexcept;
+
+        GPINTEN get_gpinten_register(Port const port, Bank const bank) const noexcept;
+        void set_gpinten_register(Port const port, Bank const bank, GPINTEN const gpinten) const noexcept;
+
+        DEFVAL get_defval_register(Port const port, Bank const bank) const noexcept;
+        void set_defval_register(Port const port, Bank const bank, DEFVAL const defval) const noexcept;
+
+        INTCON get_intcon_register(Port const port, Bank const bank) const noexcept;
+        void set_intcon_register(Port const port, Bank const bank, INTCON const intcon) const noexcept;
+
+        IOCON get_iocon_register(Port const port, Bank const bank) const noexcept;
+        void set_iocon_register(Port const port, Bank const bank, IOCON const iocon) const noexcept;
+
+        GPPU get_gppu_register(Port const port, Bank const bank) const noexcept;
+        void set_gppu_register(Port const port, Bank const bank, GPPU const gppu) const noexcept;
+
+        INTF get_intf_register(Port const port, Bank const bank) const noexcept;
+
+        INTCAP get_intcap_register(Port const port, Bank const bank) const noexcept;
+
+        GPIO get_gpio_register(Port const port, Bank const bank) const noexcept;
+        void set_gpio_register(Port const port, Bank const bank, GPIO const gpio) const noexcept;
+
+        bool initialized_{false};
+
+        Bank bank_{};
+
         I2CDevice i2c_device_{};
     };
 
