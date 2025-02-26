@@ -25,9 +25,16 @@ namespace MCP23017 {
         PinState get_pin_state(Port const port, PinNum const pin_num) const noexcept;
         void set_pin_state(Port const port, PinNum const pin_num, PinState const pin_state) const noexcept;
 
+        bool get_pin(Port const port, PinNum const pin_num) const noexcept;
+
         void toggle_pin(Port const port, PinNum const pin_num) const noexcept;
+        void toggle_pins(Port const port) const noexcept;
+
         void set_pin(Port const port, PinNum const pin_num) const noexcept;
+        void set_pins(Port const port) const noexcept;
+
         void reset_pin(Port const port, PinNum const pin_num) const noexcept;
+        void reset_pins(Port const port) const noexcept;
 
     private:
         void initialize_port(Port const port, PortConfig const& port_config) const noexcept;

@@ -35,14 +35,14 @@ int main()
                      .ip1 = std::to_underlying(PinPolarity::NORMAL),
                      .ip0 = std::to_underlying(PinPolarity::NORMAL)};
 
-    auto gpinten = GPINTEN{.gpint7 = false,
-                           .gpint6 = false,
-                           .gpint5 = false,
-                           .gpint4 = false,
-                           .gpint3 = false,
-                           .gpint2 = false,
-                           .gpint1 = false,
-                           .gpint0 = false};
+    auto gpinten = GPINTEN{.gpint7 = std::to_underlying(IntEnable::DISABLED),
+                           .gpint6 = std::to_underlying(IntEnable::DISABLED),
+                           .gpint5 = std::to_underlying(IntEnable::DISABLED),
+                           .gpint4 = std::to_underlying(IntEnable::DISABLED),
+                           .gpint3 = std::to_underlying(IntEnable::DISABLED),
+                           .gpint2 = std::to_underlying(IntEnable::DISABLED),
+                           .gpint1 = std::to_underlying(IntEnable::DISABLED),
+                           .gpint0 = std::to_underlying(IntEnable::DISABLED)};
 
     auto defval = DEFVAL{.def7 = std::to_underlying(PinState::LOGIC_LOW),
                          .def6 = std::to_underlying(PinState::LOGIC_LOW),
@@ -92,14 +92,10 @@ int main()
     auto mcp23017 = MCP23017::MCP23017{std::move(i2c_device), port_a_config, port_b_config};
 
     while (true) {
-        mcp23017.set_pin_state(Port::A, PinNum::IO_0, PinState::LOGIC_HIGH);
-        mcp23017.set_pin_state(Port::A, PinNum::IO_1, PinState::LOGIC_LOW);
-        mcp23017.set_pin_state(Port::A, PinNum::IO_2, PinState::LOGIC_HIGH);
-        mcp23017.set_pin_state(Port::A, PinNum::IO_3, PinState::LOGIC_LOW);
-        mcp23017.set_pin_state(Port::A, PinNum::IO_4, PinState::LOGIC_HIGH);
-        mcp23017.set_pin_state(Port::A, PinNum::IO_5, PinState::LOGIC_LOW);
-        mcp23017.set_pin_state(Port::A, PinNum::IO_6, PinState::LOGIC_HIGH);
-        mcp23017.set_pin_state(Port::A, PinNum::IO_7, PinState::LOGIC_LOW);
+        for (auto pin_num = 0U; pin_num < 8U; ++pin_num) {
+            mcp23017.toggle_pin(Port::A, static_cast<PinNum>(pin_num));
+            HAL_Delay(100UL);
+        }
     }
 
     return 0;

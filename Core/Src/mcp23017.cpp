@@ -21,36 +21,53 @@ namespace MCP23017 {
 
     PinState MCP23017::get_pin_state(Port const port, PinNum const pin_num) const noexcept
     {
-        return (this->get_gpio_register(port, this->bank_) & (1U << std::to_underlying(pin_num))) > 0
-                   ? PinState::LOGIC_HIGH
-                   : PinState::LOGIC_LOW;
+        return this->get_pin(port, pin_num) ? PinState::LOGIC_HIGH : PinState::LOGIC_LOW;
     }
 
     void MCP23017::set_pin_state(Port const port, PinNum const pin_num, PinState const pin_state) const noexcept
     {
-        this->set_gpio_register(port,
-                                this->bank_,
-                                pin_state == PinState::LOGIC_HIGH
-                                    ? this->get_gpio_register(port, this->bank_) | (1U << std::to_underlying(pin_num))
-                                    : this->get_gpio_register(port, this->bank_) &
-                                          ~(1U << std::to_underlying(pin_num)));
+        pin_state == PinState::LOGIC_HIGH ? this->set_pin(port, pin_num) : this->reset_pin(port, pin_num);
+    }
+
+    bool MCP23017::get_pin(Port const port, PinNum const pin_num) const noexcept
+    {
+        (this->get_gpio_register(port, this->bank_) & pin_num_to_mask(pin_num)) > 0 ? true : false;
     }
 
     void MCP23017::toggle_pin(Port const port, PinNum const pin_num) const noexcept
     {
         this->set_gpio_register(port,
                                 this->bank_,
-                                this->get_gpio_register(port, this->bank_) ^ (1U << std::to_underlying(pin_num)));
+                                this->get_gpio_register(port, this->bank_) ^ pin_num_to_mask(pin_num));
+    }
+
+    void MCP23017::toggle_pins(Port const port) const noexcept
+    {
+        this->set_gpio_register(port, this->bank_, this->get_gpio_register(port, this->bank_) ^ 0xFF);
     }
 
     void MCP23017::set_pin(Port const port, PinNum const pin_num) const noexcept
     {
-        this->set_pin_state(port, pin_num, PinState::LOGIC_HIGH);
+        this->set_gpio_register(port,
+                                this->bank_,
+                                this->get_gpio_register(port, this->bank_) | pin_num_to_mask(pin_num));
+    }
+
+    void MCP23017::set_pins(Port const port) const noexcept
+    {
+        this->set_gpio_register(port, this->bank_, this->get_gpio_register(port, this->bank_) | 0xFF);
     }
 
     void MCP23017::reset_pin(Port const port, PinNum const pin_num) const noexcept
     {
-        this->set_pin_state(port, pin_num, PinState::LOGIC_LOW);
+        this->set_gpio_register(port,
+                                this->bank_,
+                                this->get_gpio_register(port, this->bank_) & ~pin_num_to_mask(pin_num));
+    }
+
+    void MCP23017::reset_pins(Port const port) const noexcept
+    {
+        this->set_gpio_register(port, this->bank_, this->get_gpio_register(port, this->bank_) & 0x00);
     }
 
     void MCP23017::initialize_port(Port const port, PortConfig const& port_config) const noexcept
@@ -170,5 +187,4 @@ namespace MCP23017 {
     {
         this->i2c_device_.write_byte(port_bank_to_reg_address(port, bank, RA::GPIO), std::bit_cast<std::uint8_t>(gpio));
     }
-
 }; // namespace MCP23017

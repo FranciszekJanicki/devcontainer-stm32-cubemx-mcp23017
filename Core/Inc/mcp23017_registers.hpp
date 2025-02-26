@@ -23,43 +23,6 @@ namespace MCP23017 {
         OLAT = 0x0A,
     };
 
-    [[nodiscard]] inline std::uint8_t separate_bank_port_to_reg_address(Port const port, RA const reg_address) noexcept
-    {
-        switch (port) {
-            case Port::A:
-                return std::to_underlying(reg_address);
-            case Port::B:
-                return std::to_underlying(reg_address) + 10U;
-            default:
-                return 0U;
-        }
-    }
-
-    [[nodiscard]] inline std::uint8_t common_bank_port_to_reg_address(Port const port, RA const reg_address) noexcept
-    {
-        switch (port) {
-            case Port::A:
-                return std::to_underlying(reg_address);
-            case Port::B:
-                return std::to_underlying(reg_address) + 1U;
-            default:
-                return 0U;
-        }
-    }
-
-    [[nodiscard]] inline std::uint8_t
-    port_bank_to_reg_address(Port const port, Bank const bank, RA const reg_address) noexcept
-    {
-        switch (bank) {
-            case Bank::SEPARATE:
-                return separate_bank_port_to_reg_address(port, reg_address);
-            case Bank::COMMON:
-                return common_bank_port_to_reg_address(port, reg_address);
-            default:
-                return 0U;
-        }
-    }
-
     struct IODIR {
         bool io7 : 1;
         bool io6 : 1;
@@ -198,6 +161,48 @@ namespace MCP23017 {
     [[nodiscard]] inline GPIO operator^(GPIO const gpio, std::uint8_t const mask) noexcept
     {
         return std::bit_cast<GPIO>(static_cast<std::uint8_t>(std::bit_cast<std::uint8_t>(gpio) ^ mask));
+    }
+
+    [[nodiscard]] inline std::uint8_t pin_num_to_mask(PinNum const pin_num) noexcept
+    {
+        return 1U << std::to_underlying(pin_num);
+    }
+
+    [[nodiscard]] inline std::uint8_t separate_bank_port_to_reg_address(Port const port, RA const reg_address) noexcept
+    {
+        switch (port) {
+            case Port::A:
+                return std::to_underlying(reg_address);
+            case Port::B:
+                return std::to_underlying(reg_address) + 10U;
+            default:
+                return 0U;
+        }
+    }
+
+    [[nodiscard]] inline std::uint8_t common_bank_port_to_reg_address(Port const port, RA const reg_address) noexcept
+    {
+        switch (port) {
+            case Port::A:
+                return std::to_underlying(reg_address);
+            case Port::B:
+                return std::to_underlying(reg_address) + 1U;
+            default:
+                return 0U;
+        }
+    }
+
+    [[nodiscard]] inline std::uint8_t
+    port_bank_to_reg_address(Port const port, Bank const bank, RA const reg_address) noexcept
+    {
+        switch (bank) {
+            case Bank::SEPARATE:
+                return separate_bank_port_to_reg_address(port, reg_address);
+            case Bank::COMMON:
+                return common_bank_port_to_reg_address(port, reg_address);
+            default:
+                return 0U;
+        }
     }
 
 }; // namespace MCP23017
